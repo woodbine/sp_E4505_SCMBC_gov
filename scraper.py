@@ -6,12 +6,12 @@ import os
 import re
 import scraperwiki
 import urllib2
-import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
 
 
 #### FUNCTIONS 1.0
+import requests    # import requests to validate urls
 
 def validateFilename(filename):
     filenameregex = '^[a-zA-Z0-9]+_[a-zA-Z0-9]+_[a-zA-Z0-9]+_[0-9][0-9][0-9][0-9]_[0-9QY][0-9]$'
@@ -38,6 +38,7 @@ def validateFilename(filename):
 
 
 def validateURL(url):
+
      try:
         r = requests.get(url, allow_redirects=True, timeout=20)
         count = 1
@@ -93,8 +94,6 @@ errors = 0
 data = []
 
 #### READ HTML 1.0
-
-
 
 html = urllib2.urlopen(url)
 soup = BeautifulSoup(html, 'lxml')
