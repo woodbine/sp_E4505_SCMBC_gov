@@ -58,24 +58,6 @@ def validateURL(url):
      except:
         print ("Error validating URL.")
         return False, False
-    # try:
-    #     r = urllib2.urlopen(url)
-    #     count = 1
-    #     while r.getcode() == 500 and count < 4:
-    #         print ("Attempt {0} - Status code: {1}. Retrying.".format(count, r.status_code))
-    #         count += 1
-    #         r = urllib2.urlopen(url)
-    #     sourceFilename = r.headers.get('Content-Disposition')
-    #     if sourceFilename:
-    #         ext = os.path.splitext(sourceFilename)[1].replace('"', '').replace(';', '').replace(' ', '')
-    #     else:
-    #         ext = os.path.splitext(url)[1]
-    #     validURL = r.getcode() == 200
-    #     validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx']
-    #     return validURL, validFiletype
-    # except:
-    #     print ("Error validating URL.")
-    #     return False, False
 
 
 def validate(filename, file_url):
