@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 #### IMPORTS 1.0
@@ -10,8 +9,7 @@ import urllib2
 import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
-from dateutil.parser import parse
-import itertools
+
 
 #### FUNCTIONS 1.0
 
@@ -55,11 +53,30 @@ def validateURL(url):
         else:
             ext = os.path.splitext(url)[1]
         validURL = r.status_code == 200
-        validFiletype = ext in ['.csv', '.xls', '.xlsx', '.CSV']
+        validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx']
         return validURL, validFiletype
      except:
         print ("Error validating URL.")
         return False, False
+    # try:
+    #     r = urllib2.urlopen(url)
+    #     count = 1
+    #     while r.getcode() == 500 and count < 4:
+    #         print ("Attempt {0} - Status code: {1}. Retrying.".format(count, r.status_code))
+    #         count += 1
+    #         r = urllib2.urlopen(url)
+    #     sourceFilename = r.headers.get('Content-Disposition')
+    #     if sourceFilename:
+    #         ext = os.path.splitext(sourceFilename)[1].replace('"', '').replace(';', '').replace(' ', '')
+    #     else:
+    #         ext = os.path.splitext(url)[1]
+    #     validURL = r.getcode() == 200
+    #     validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx']
+    #     return validURL, validFiletype
+    # except:
+    #     print ("Error validating URL.")
+    #     return False, False
+
 
 def validate(filename, file_url):
     validFilename = validateFilename(filename)
@@ -109,6 +126,14 @@ for link in links:
     if '.CSV' in link['href']:
         url = link['href']
         csvMth = url.split('to')[-1].strip()[:3]
+        if 'Q1' in url:
+            csvMth = 'Q1'
+        if 'Q2' in url:
+            csvMth = 'Q2'
+        if 'Q3' in url:
+            csvMth = 'Q3'
+        if 'Q4' in url:
+            csvMth = 'Q4'
         csvYr = url.split('to')[-1].split('(CSV)')[0].strip()[-4:]
         csvMth = convert_mth_strings(csvMth.upper())
         data.append([csvYr, csvMth, url])
