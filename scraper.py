@@ -116,6 +116,8 @@ for link in links:
         if 'Q4' in url:
             csvMth = 'Q4'
         csvYr = url.split('to')[-1].split('(CSV)')[0].strip()[-4:]
+        if '.CSV' in csvYr:
+            csvYr = '2016'
         csvMth = convert_mth_strings(csvMth.upper())
         data.append([csvYr, csvMth, url])
 
