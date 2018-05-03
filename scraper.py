@@ -8,7 +8,8 @@ import scraperwiki
 import urllib2
 from datetime import datetime
 from bs4 import BeautifulSoup
-
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 #### FUNCTIONS 1.2
 import requests    # import requests to validate urls
@@ -53,6 +54,8 @@ def validateURL(url):
             ext = '.csv'
         else:
             ext = os.path.splitext(url)[1]
+        if 'CSV' in os.path.splitext(url)[0]:
+            ext = '.CSV'
         validURL = r.status_code == 200
         validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx']
         return validURL, validFiletype
@@ -89,7 +92,7 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E4505_SCMBC_gov"
-url = "http://www.sunderland.gov.uk/index.aspx?articleid=4774"
+url = "https://www.sunderland.gov.uk/over500?p={}"
 errors = 0
 data = []
 
@@ -100,26 +103,25 @@ soup = BeautifulSoup(html, 'lxml')
 
 #### SCRAPE DATA
 
-
-block = soup.find('section', attrs = {'id':'downloads'})
-links = block.findAll('a', href = True)
-for link in links:
-    if '.CSV' in link['href']:
-        url = link['href']
-        csvMth = url.split('to')[-1].strip()[:3]
-        if 'Q1' in url:
-            csvMth = 'Q1'
-        if 'Q2' in url:
-            csvMth = 'Q2'
-        if 'Q3' in url:
-            csvMth = 'Q3'
-        if 'Q4' in url:
-            csvMth = 'Q4'
-        csvYr = url.split('to')[-1].split('(CSV)')[0].strip()[-4:]
-        if '.CSV' in csvYr:
-            csvYr = '2016'
-        csvMth = convert_mth_strings(csvMth.upper())
-        data.append([csvYr, csvMth, url])
+for p in range(1, 3):
+    html = urllib2.urlopen(url.format(p))
+    soup = BeautifulSoup(html, 'lxml')
+    links = soup.findAll('a', 'item__link')
+    for link in links:
+            file_url = link['href']
+            link_text = link.text
+            if '(CSV)' in link_text:
+                if 'Q1' in link_text or 'Quarter 1' in link_text:
+                    csvMth = 'Q1'
+                if 'Q2' in link_text or 'Quarter 2' in link_text:
+                    csvMth = 'Q2'
+                if 'Q3' in link_text or 'Quarter 3' in link_text:
+                    csvMth = 'Q3'
+                if 'Q4' in link_text or 'Quarter 4' in link_text:
+                    csvMth = 'Q4'
+                csvYr = link_text.split('(CSV)')[0].strip()[-4:]
+                csvMth = convert_mth_strings(csvMth.upper())
+                data.append([csvYr, csvMth, file_url])
 
 #### STORE DATA 1.0
 
@@ -142,4 +144,3 @@ if errors > 0:
 
 
 #### EOF
-
